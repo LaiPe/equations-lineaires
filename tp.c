@@ -53,7 +53,7 @@ void afficheMatrice(float ** t,float taille){
     }
 }
 
-//Triangulation
+//Gauss et Triangulation
 void gauss(float ** A,float * B,int taille){
     for (int k=0;k<taille-1;k++){
         for (int i=k+1;i<taille;i++){
@@ -64,10 +64,20 @@ void gauss(float ** A,float * B,int taille){
             B[i]-=piv*B[k];
         }
     }
-    float * X=declTab(taille);
-    /*for (int n;n=taille;n++){
-        ;
-    }*/
+}
+float * trig(float ** A,float * B,int taille){
+    float * X=malloc(taille*sizeof(float));
+    int n=taille-1;
+
+    X[n]=B[n]/A[n][n];
+    for (int i=n-1;i>=0;i--){
+        float somm=0;
+        for (int j=i+1;j<=n;j++){
+            somm+=A[i][j]*X[j];
+        }
+        X[i]=B[i]-somm;
+    }
+    return X;
 }
 
 int main(){
@@ -79,6 +89,7 @@ int main(){
     initTab(B,B_1,N); //Ecriture des valeurs de B
 
     //Affichage initial (avant traitement)
+    printf("============\n");
     afficheMatrice(A,N);
     printf("\n");
     afficheVect(B,N);
@@ -86,10 +97,15 @@ int main(){
     gauss(A,B,N); //traitement avec l'algorithme de gauss
     printf("============\n");
 
-    //Affichage final (après traitement)
+    //Affichage intermediaire (après gauss)
     afficheMatrice(A,N);
     printf("\n");
     afficheVect(B,N);
 
+    float * X=trig(A,B,N); //traitement de la matrice triangulaire supp
+    printf("============\n");
+
+    //Affichage Terminal (solution de AX=B)
+    afficheVect(X,N);
     return 0;
 }
