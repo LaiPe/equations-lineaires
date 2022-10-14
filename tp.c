@@ -1,8 +1,24 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define N 3
+#define M 3 //Taille des matrices statiques (A_1,A_2,A_3,A_4)
 
+#define N 2 //Taille de la matrice sélectionnée ou voulue
+
+float puiss(float x,int puiss){
+    float result=1;
+    if (puiss>=0){
+        for (int i=0;i<puiss;i++){
+            result=result*x;
+        }
+    }
+    else{
+        for (int i=0;i>puiss;i--){
+            result=result/x;
+        }
+    }
+    return result;
+}
 //DECLARATION ET INIT
 float ** declMatrice(int taille){
     float ** X=malloc(taille*sizeof(float*));
@@ -89,23 +105,38 @@ float * valdeB(float ** A,float * B,int taille){
     }
     return B;
 }
+void A_5(float ** A,int taille){
+    for (int i=0;i<taille;i++){
+        for (int j=0;j<taille;j++){
+            if (i==0){
+                A[0][j]=puiss(2,(1-(j+1)));
+            }
+            A[j][0]=puiss(2,(1-(j+1)));
+        }
+        A[i][i]=1;
+    }
+}
+
 
 int main(){
+    printf("%f\n",puiss(4,-2));
+
     float ** A=declMatrice(N); //Déclaration de la Matrice A
     float * B=declTab(N); //Déclaration du Vecteur B
     //Valeurs de A
-    float A_1[][N]={{3,0,4},{7,4,2},{-1,1,2}};
-    float A_2[][N]={{-3,3,-6},{-4,7,8},{5,7,-9}};
-    float A_3[][N]={{4,1,1},{2,-9,0},{0,-8,6}};
-    float A_4[][N]={{7,6,9},{4,5,-4},{-7,-3,8}};
+    float A_1[][M]={{3,0,4},{7,4,2},{-1,1,2}};
+    float A_2[][M]={{-3,3,-6},{-4,7,8},{5,7,-9}};
+    float A_3[][M]={{4,1,1},{2,-9,0},{0,-8,6}};
+    float A_4[][M]={{7,6,9},{4,5,-4},{-7,-3,8}};
     //Valeurs de B
     float B_1[]={7,13,2};
     float B_2[]={-6,11,3};
     float B_3[]={6,-7,-2};
     float B_4[]={22,5,-2};
 
-    initMatrice(A,A_1,N); //Ecriture des valeurs de A 
+    //initMatrice(A,A_1,N); //Ecriture des valeurs de A 
     //initTab(B,B_4,N); //Ecriture des valeurs de B
+    A_5(A,N);
     valdeB(A,B,N); //Ecriture des valeurs de B tel que Xi=1
 
     //Affichage initial (avant traitement)
