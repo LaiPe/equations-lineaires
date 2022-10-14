@@ -83,10 +83,20 @@ float * trig(float ** A,float * B,int taille){
 int main(){
     float ** A=declMatrice(N); //Déclaration de la Matrice A
     float * B=declTab(N); //Déclaration du Vecteur B
-    float A_1[][N]={{3,0,4},{7,4,2},{-1,1,2}}; //Valeurs de A
-    float B_1[]={2,2,8}; //Valeurs de B
-    initMatrice(A,A_1,N); //Ecriture des valeurs de A 
-    initTab(B,B_1,N); //Ecriture des valeurs de B
+    //Valeurs de A
+    float A_1[][N]={{3,0,4},{7,4,2},{-1,1,2}};
+    float A_2[][N]={{-3,3,-6},{-4,7,8},{5,7,-9}};
+    float A_3[][N]={{4,1,1},{2,-9,0},{0,-8,6}};
+    float A_4[][N]={{7,6,9},{4,5,-4},{-7,-3,8}};
+    //Valeurs de B
+    float B_1[]={7,13,2};
+    float B_2[]={-6,11,3};
+    float B_3[]={6,-7,-2};
+    float B_4[]={22,5,-2};
+
+    initMatrice(A,A_4,N); //Ecriture des valeurs de A 
+    initTab(B,B_4,N); //Ecriture des valeurs de B
+
 
     //Affichage initial (avant traitement)
     printf("============\n");
@@ -107,5 +117,6 @@ int main(){
 
     //Affichage Terminal (solution de AX=B)
     afficheVect(X,N);
+
     return 0;
 }
