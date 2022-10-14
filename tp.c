@@ -79,6 +79,16 @@ float * trig(float ** A,float * B,int taille){
     }
     return X;
 }
+float * valdeB(float ** A,float * B,int taille){
+    for (int i=0;i<taille;i++){
+        float somm=0;
+        for (int y=0;y<taille;y++){
+            somm+=A[i][y];
+        }
+        B[i]=somm;
+    }
+    return B;
+}
 
 int main(){
     float ** A=declMatrice(N); //Déclaration de la Matrice A
@@ -94,9 +104,9 @@ int main(){
     float B_3[]={6,-7,-2};
     float B_4[]={22,5,-2};
 
-    initMatrice(A,A_4,N); //Ecriture des valeurs de A 
-    initTab(B,B_4,N); //Ecriture des valeurs de B
-
+    initMatrice(A,A_1,N); //Ecriture des valeurs de A 
+    //initTab(B,B_4,N); //Ecriture des valeurs de B
+    valdeB(A,B,N); //Ecriture des valeurs de B tel que Xi=1
 
     //Affichage initial (avant traitement)
     printf("============\n");
