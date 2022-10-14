@@ -75,7 +75,7 @@ float * trig(float ** A,float * B,int taille){
         for (int j=i+1;j<=n;j++){
             somm+=A[i][j]*X[j];
         }
-        X[i]=B[i]-somm;
+        X[i]=(1/A[i][i])*(B[i]-somm);
     }
     return X;
 }
@@ -83,7 +83,7 @@ float * trig(float ** A,float * B,int taille){
 int main(){
     float ** A=declMatrice(N); //Déclaration de la Matrice A
     float * B=declTab(N); //Déclaration du Vecteur B
-    float A_1[][N]={{1,2,2},{1,3,3},{3,7,8}}; //Valeurs de A
+    float A_1[][N]={{3,0,4},{7,4,2},{-1,1,2}}; //Valeurs de A
     float B_1[]={2,2,8}; //Valeurs de B
     initMatrice(A,A_1,N); //Ecriture des valeurs de A 
     initTab(B,B_1,N); //Ecriture des valeurs de B
