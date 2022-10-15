@@ -222,9 +222,13 @@ int main(int argc, char ** argv){
     float B_3[]={6,-7,-2};
     float B_4[]={22,5,-2};
 
-    initMatrice(A,A_1,N); //Ecriture des valeurs de A 
+    initMatrice(A,A_1,N); //Ecriture des valeurs de A (A_1,A_2,A_3,A_4)
+    //ou bien
+    //A_6(A,N); //Génération des valeurs de A (A_5,A_6)
+
     //initTab(B,B_3,N); //Ecriture des valeurs de B
-    //A_6(A,N);
+    //ou bien
+    valdeB(A,B,N); //Génération des valeurs de B tel que Xi=1
 
 
     //Affichage initial (avant traitement)
@@ -232,20 +236,21 @@ int main(int argc, char ** argv){
     printf("A=\n");
     printf("============\n");
     afficheMatrice(A,N);
+    printf("============\n");
+    printf("B=\n");
+    printf("============\n");
+    afficheVect(B,N);
 
+    //METHODE GAUSS
     if (argc>1 && strcmp(argv[1],"gauss")==0){
-        valdeB(A,B,N); //Ecriture des valeurs de B tel que Xi=1
-        printf("============\n");
-        printf("B=\n");
-        printf("============\n");
-        afficheVect(B,N);
         if (argc>2 && strcmp(argv[2],"det")==0){
-            gaussDet(A,B,N); //traitement avec l'algorithme de gauss avec écriture des logs
+            gaussDet(A,B,N); //Traitement avec l'algorithme de gauss avec écriture des logs
         }
         else{
             gauss(A,B,N); //traitement avec l'algorithme de gauss
         }
         float * X=trigSup(A,B,N); //traitement de la matrice triangulaire supp
+        
         //Affichage final (solution de AX=B)
         printf("============\n");
         printf("X=\n");
