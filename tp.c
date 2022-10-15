@@ -20,6 +20,15 @@ float puiss(float x,int puiss){
     }
     return result;
 }
+char * souligne(int n){
+    n=n*4;
+    char * X=malloc((n)*sizeof(char));
+    for (int i=0;i<n;i++){
+        X[i]='=';
+    }
+    X[n]='\0';
+    return X;
+}
 
 //MATRICES TEST
 void A_5(float ** A,int n){
@@ -81,7 +90,7 @@ void initTab(float * tab,float val[],int taille){
     }
 }
 
-//AFFICHAGE
+//AFFICHAGE/ECRITURE
 void afficheVect(float * t,int taille){
     for (int i=0;i<taille;i++){
         printf("%g \n",t[i]);
@@ -96,6 +105,21 @@ void afficheMatrice(float ** t,float taille){
         printf("\n");
     }
     printf("\n");
+}
+void ecritVect(FILE * fd,float * t,int taille){
+    for (int i=0;i<taille;i++){
+        fprintf(fd,"%g \n",t[i]);
+    }
+    fprintf(fd,"%s\n",souligne(taille));
+}
+void ecritMatrice(FILE * fd,float ** t,float taille){
+    for (int i=0;i<taille;i++){
+        for (int y=0;y<taille;y++){
+            fprintf(fd,"%g ",t[i][y]);
+        }
+        fprintf(fd,"\n");
+    }
+    fprintf(fd,"%s\n",souligne(taille));
 }
 
 //RESOLUTIONS FACILES
@@ -124,6 +148,52 @@ void gauss(float ** A,float * B,int taille){
             B[i]-=piv*B[k];
         }
     }
+}
+void gaussDet(float ** A,float * B,int taille){
+    FILE * ope=fopen("./bin/operations.log","w+");
+    FILE * evoMatA=fopen("./bin/evolutionMatriceA.log","w+");
+    FILE * evoVectB=fopen("./bin/evolutionVecteurB.log","w+");
+    
+    fprintf(ope,"Début Gauss\n");
+
+    fprintf(evoMatA,"Début Gauss\n%s\nMATRICE A:\n%s\n",souligne(taille),souligne(taille));
+    ecritMatrice(evoMatA,A,taille);
+
+    fprintf(evoVectB,"Début Gauss\n%s\nVECTEUR B:\n%s\n",souligne(taille),souligne(taille));
+    ecritVect(evoVectB,B,taille);
+
+    for (int k=0;k<taille-1;k++){
+        fprintf(ope,"k=%d\n",k);
+        for (int i=k+1;i<taille;i++){
+            fprintf(ope,"    i=%d\n",i);
+            float piv=A[i][k]/A[k][k];
+            fprintf(ope,"        piv=%g/%g=%g\n",A[i][k],A[k][k],piv);
+            for (int j=k;j<taille;j++){
+                fprintf(ope,"        j=%d\n",j);
+                fprintf(ope,"            %g-=%g*%g\n",A[i][j],piv,A[k][j]);
+                fprintf(ope,"            %g-=%g\n",A[i][j],piv*A[k][j]);
+                A[i][j]-=piv*A[k][j];
+                fprintf(ope,"            =%g\n",A[i][j]);
+
+                fprintf(evoMatA,"k=%d,i=%d,j=%d\n%s\n",k,i,j,souligne(taille));
+                ecritMatrice(evoMatA,A,taille);
+            }
+            fprintf(ope,"        %g-=%g*%g\n",B[i],piv,B[k]);
+            fprintf(ope,"        %g-=%g\n",B[i],piv*B[k]);
+            B[i]-=piv*B[k];
+            fprintf(ope,"        =%g\n",B[i]);
+
+            fprintf(evoVectB,"k=%d,i=%d\n%s\n",k,i,souligne(taille));
+            ecritVect(evoVectB,B,taille);
+        }
+    }
+    fprintf(evoMatA,"Fin Gauss");
+    fprintf(evoVectB,"Fin Gauss");
+    fprintf(ope,"Fin Gauss\n");
+
+    fclose(ope);
+    fclose(evoMatA);
+    fclose(evoVectB);
 }
 float * valdeB(float ** A,float * B,int taille){
     for (int i=0;i<taille;i++){
@@ -165,7 +235,16 @@ int main(){
     printf("============\n");
     afficheVect(B,N);
 
-    gauss(A,B,N); //traitement avec l'algorithme de gauss
+    gaussDet(A,B,N); //traitement avec l'algorithme de gauss
+    //Affichage intermédiaire
+    printf("============\n");
+    printf("A=\n");
+    printf("============\n");
+    afficheMatrice(A,N);
+    printf("============\n");
+    printf("B=\n");
+    printf("============\n");
+    afficheVect(B,N);
     float * X=trigSup(A,B,N); //traitement de la matrice triangulaire supp
 
     //Affichage final (solution de AX=B)
