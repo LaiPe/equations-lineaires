@@ -3,7 +3,7 @@
 
 #define M 3 //Taille des matrices statiques (A_1,A_2,A_3,A_4)
 
-#define N  //Taille de la matrice sélectionnée ou voulue
+#define N 6 //Taille de la matrice sélectionnée ou voulue
 
 float puiss(float x,int puiss){
     float result=1;
