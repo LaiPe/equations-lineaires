@@ -110,7 +110,7 @@ void gauss(float ** A,float * B,int taille){
         }
     }
 }
-float * trig(float ** A,float * B,int taille){
+float * trigSup(float ** A,float * B,int taille){
     float * X=malloc(taille*sizeof(float));
     int n=taille-1;
 
@@ -165,7 +165,7 @@ int main(){
     afficheVect(B,N);
 
     gauss(A,B,N); //traitement avec l'algorithme de gauss
-    float * X=trig(A,B,N); //traitement de la matrice triangulaire supp
+    float * X=trigSup(A,B,N); //traitement de la matrice triangulaire supp
 
     //Affichage final (solution de AX=B)
     printf("============\n");
