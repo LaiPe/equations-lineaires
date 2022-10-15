@@ -242,7 +242,7 @@ int main(int argc, char ** argv){
     afficheVect(B,N);
 
     //METHODE GAUSS
-    if (argc>1 && strcmp(argv[1],"gauss")==0){
+    if (argc>1 && strcmp(argv[1],"G")==0){
         if (argc>2 && strcmp(argv[2],"det")==0){
             gaussDet(A,B,N); //Traitement avec l'algorithme de gauss avec écriture des logs
         }
@@ -250,13 +250,23 @@ int main(int argc, char ** argv){
             gauss(A,B,N); //traitement avec l'algorithme de gauss
         }
         float * X=trigSup(A,B,N); //traitement de la matrice triangulaire supp
-        
+
         //Affichage final (solution de AX=B)
         printf("============\n");
         printf("X=\n");
         printf("============\n");
         afficheVect(X,N);
     }
-
+    //METHODE JACOBI
+    else if (argc>1 && strcmp(argv[1],"J")==0){
+        ;
+    }
+    //METHODE GAUSS-SEIDEL
+    else if (argc>1 && strcmp(argv[1],"GS")==0){
+        ;
+    }
+    else{
+        printf("Aucune méthode de résolution valable renseigné.\nVeuillez vous reporter au README pour des informations relatives à la syntaxe.\n");
+    }
     return 0;
 }
