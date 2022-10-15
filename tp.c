@@ -98,18 +98,7 @@ void afficheMatrice(float ** t,float taille){
     printf("\n");
 }
 
-//METHODE GAUSS
-void gauss(float ** A,float * B,int taille){
-    for (int k=0;k<taille-1;k++){
-        for (int i=k+1;i<taille;i++){
-            float piv=A[i][k]/A[k][k];
-            for (int j=k;j<taille;j++){
-                A[i][j]-=piv*A[k][j];
-            }
-            B[i]-=piv*B[k];
-        }
-    }
-}
+//RESOLUTIONS FACILES
 float * trigSup(float ** A,float * B,int taille){
     float * X=malloc(taille*sizeof(float));
     int n=taille-1;
@@ -123,6 +112,18 @@ float * trigSup(float ** A,float * B,int taille){
         X[i]=(1/A[i][i])*(B[i]-somm);
     }
     return X;
+}
+//METHODE GAUSS
+void gauss(float ** A,float * B,int taille){
+    for (int k=0;k<taille-1;k++){
+        for (int i=k+1;i<taille;i++){
+            float piv=A[i][k]/A[k][k];
+            for (int j=k;j<taille;j++){
+                A[i][j]-=piv*A[k][j];
+            }
+            B[i]-=piv*B[k];
+        }
+    }
 }
 float * valdeB(float ** A,float * B,int taille){
     for (int i=0;i<taille;i++){
