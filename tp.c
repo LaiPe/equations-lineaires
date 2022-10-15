@@ -3,7 +3,7 @@
 
 #define M 3 //Taille des matrices statiques (A_1,A_2,A_3,A_4)
 
-#define N 6 //Taille de la matrice sélectionnée ou voulue
+#define N 3 //Taille de la matrice sélectionnée ou voulue
 
 //OUTILS
 float puiss(float x,int puiss){
@@ -150,9 +150,9 @@ int main(){
     float B_3[]={6,-7,-2};
     float B_4[]={22,5,-2};
 
-    //initMatrice(A,A_3,N); //Ecriture des valeurs de A 
+    initMatrice(A,A_1,N); //Ecriture des valeurs de A 
     //initTab(B,B_3,N); //Ecriture des valeurs de B
-    A_6(A,N);
+    //A_6(A,N);
     valdeB(A,B,N); //Ecriture des valeurs de B tel que Xi=1
 
     //Affichage initial (avant traitement)
