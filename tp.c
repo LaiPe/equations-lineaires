@@ -5,6 +5,7 @@
 
 #define N 6 //Taille de la matrice sélectionnée ou voulue
 
+//OUTILS
 float puiss(float x,int puiss){
     float result=1;
     if (puiss>=0){
@@ -19,6 +20,33 @@ float puiss(float x,int puiss){
     }
     return result;
 }
+
+//MATRICES TEST
+void A_5(float ** A,int n){
+    for (int i=0;i<n;i++){
+        for (int j=0;j<n;j++){
+            if (i==0){
+                A[0][j]=puiss(2,(1-(j+1)));
+            }
+            A[j][0]=puiss(2,(1-(j+1)));
+        }
+        A[i][i]=1;
+    }
+}
+void A_6(float ** A,int n){
+    for (int i=0;i<n;i++){
+        for (int j=0;j<n;j++){
+            if (j==i+1 && i<(n-1)){
+                A[i][j]=-1;
+            }
+            else if (j==i-1 && i>0){
+                A[i][j]=-2;
+            }
+        }
+        A[i][i]=3;
+    }
+}
+
 //DECLARATION ET INIT
 float ** declMatrice(int taille){
     float ** X=malloc(taille*sizeof(float*));
@@ -70,19 +98,8 @@ void afficheMatrice(float ** t,float taille){
     printf("\n");
 }
 
-//Gauss et Triangulation
-void gauss(float ** A,float * B,int taille){
-    for (int k=0;k<taille-1;k++){
-        for (int i=k+1;i<taille;i++){
-            float piv=A[i][k]/A[k][k];
-            for (int j=k;j<taille;j++){
-                A[i][j]-=piv*A[k][j];
-            }
-            B[i]-=piv*B[k];
-        }
-    }
-}
-float * trig(float ** A,float * B,int taille){
+//RESOLUTIONS FACILES
+float * trigSup(float ** A,float * B,int taille){
     float * X=malloc(taille*sizeof(float));
     int n=taille-1;
 
@@ -96,6 +113,18 @@ float * trig(float ** A,float * B,int taille){
     }
     return X;
 }
+//METHODE GAUSS
+void gauss(float ** A,float * B,int taille){
+    for (int k=0;k<taille-1;k++){
+        for (int i=k+1;i<taille;i++){
+            float piv=A[i][k]/A[k][k];
+            for (int j=k;j<taille;j++){
+                A[i][j]-=piv*A[k][j];
+            }
+            B[i]-=piv*B[k];
+        }
+    }
+}
 float * valdeB(float ** A,float * B,int taille){
     for (int i=0;i<taille;i++){
         float somm=0;
@@ -106,31 +135,6 @@ float * valdeB(float ** A,float * B,int taille){
     }
     return B;
 }
-void A_5(float ** A,int n){
-    for (int i=0;i<n;i++){
-        for (int j=0;j<n;j++){
-            if (i==0){
-                A[0][j]=puiss(2,(1-(j+1)));
-            }
-            A[j][0]=puiss(2,(1-(j+1)));
-        }
-        A[i][i]=1;
-    }
-}
-void A_6(float ** A,int n){
-    for (int i=0;i<n;i++){
-        for (int j=0;j<n;j++){
-            if (j==i+1 && i<(n-1)){
-                A[i][j]=-1;
-            }
-            else if (j==i-1 && i>0){
-                A[i][j]=-2;
-            }
-        }
-        A[i][i]=3;
-    }
-}
-
 
 int main(){
     float ** A=declMatrice(N); //Déclaration de la Matrice A
@@ -162,7 +166,7 @@ int main(){
     afficheVect(B,N);
 
     gauss(A,B,N); //traitement avec l'algorithme de gauss
-    float * X=trig(A,B,N); //traitement de la matrice triangulaire supp
+    float * X=trigSup(A,B,N); //traitement de la matrice triangulaire supp
 
     //Affichage final (solution de AX=B)
     printf("============\n");
