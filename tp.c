@@ -3,7 +3,7 @@
 
 #define M 3 //Taille des matrices statiques (A_1,A_2,A_3,A_4)
 
-#define N 6 //Taille de la matrice sélectionnée ou voulue
+#define N  //Taille de la matrice sélectionnée ou voulue
 
 float puiss(float x,int puiss){
     float result=1;
@@ -35,7 +35,7 @@ float ** declMatrice(int taille){
     }
     return X;
 }
-void initMatrice(float ** tab,float val[][N],int taille){
+void initMatrice(float ** tab,float val[][M],int taille){
     for (int i=0;i<taille;i++){
         for (int y=0;y<taille;y++){
             tab[i][y]=val[i][y];
