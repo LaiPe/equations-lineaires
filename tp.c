@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #define M 3 //Taille des matrices statiques (A_1,A_2,A_3,A_4)
 
@@ -206,7 +207,8 @@ float * valdeB(float ** A,float * B,int taille){
     return B;
 }
 
-int main(){
+int main(int argc, char ** argv){
+
     float ** A=declMatrice(N); //Déclaration de la Matrice A
     float * B=declTab(N); //Déclaration du Vecteur B
     //Valeurs de A
@@ -223,35 +225,33 @@ int main(){
     initMatrice(A,A_1,N); //Ecriture des valeurs de A 
     //initTab(B,B_3,N); //Ecriture des valeurs de B
     //A_6(A,N);
-    valdeB(A,B,N); //Ecriture des valeurs de B tel que Xi=1
+
 
     //Affichage initial (avant traitement)
     printf("============\n");
     printf("A=\n");
     printf("============\n");
     afficheMatrice(A,N);
-    printf("============\n");
-    printf("B=\n");
-    printf("============\n");
-    afficheVect(B,N);
 
-    gaussDet(A,B,N); //traitement avec l'algorithme de gauss
-    //Affichage intermédiaire
-    printf("============\n");
-    printf("A=\n");
-    printf("============\n");
-    afficheMatrice(A,N);
-    printf("============\n");
-    printf("B=\n");
-    printf("============\n");
-    afficheVect(B,N);
-    float * X=trigSup(A,B,N); //traitement de la matrice triangulaire supp
-
-    //Affichage final (solution de AX=B)
-    printf("============\n");
-    printf("X=\n");
-    printf("============\n");
-    afficheVect(X,N);
+    if (argc>1 && strcmp(argv[1],"gauss")==0){
+        valdeB(A,B,N); //Ecriture des valeurs de B tel que Xi=1
+        printf("============\n");
+        printf("B=\n");
+        printf("============\n");
+        afficheVect(B,N);
+        if (argc>2 && strcmp(argv[2],"det")==0){
+            gaussDet(A,B,N); //traitement avec l'algorithme de gauss avec écriture des logs
+        }
+        else{
+            gauss(A,B,N); //traitement avec l'algorithme de gauss
+        }
+        float * X=trigSup(A,B,N); //traitement de la matrice triangulaire supp
+        //Affichage final (solution de AX=B)
+        printf("============\n");
+        printf("X=\n");
+        printf("============\n");
+        afficheVect(X,N);
+    }
 
     return 0;
 }
