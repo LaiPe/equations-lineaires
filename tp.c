@@ -168,9 +168,10 @@ void gaussDet(float ** A,float * B,int taille){
         for (int i=k+1;i<taille;i++){
             fprintf(ope,"    i=%d\n",i);
             float piv=A[i][k]/A[k][k];
-            fprintf(ope,"        piv=%g/%g=%g\n",A[i][k],A[k][k],piv);
+            fprintf(ope,"        piv=A[%d][%d]/A[%d][%d]=%g/%g=%g\n",i,k,k,k,A[i][k],A[k][k],piv);
             for (int j=k;j<taille;j++){
                 fprintf(ope,"        j=%d\n",j);
+                fprintf(ope,"            A[%d][%d]-=piv*A[%d][%d]\n",i,j,k,j);
                 fprintf(ope,"            %g-=%g*%g\n",A[i][j],piv,A[k][j]);
                 fprintf(ope,"            %g-=%g\n",A[i][j],piv*A[k][j]);
                 A[i][j]-=piv*A[k][j];
@@ -179,6 +180,7 @@ void gaussDet(float ** A,float * B,int taille){
                 fprintf(evoMatA,"k=%d,i=%d,j=%d\n%s\n",k,i,j,souligne(taille));
                 ecritMatrice(evoMatA,A,taille);
             }
+            fprintf(ope,"        B[%d]-=piv*B[%d]\n",i,k);
             fprintf(ope,"        %g-=%g*%g\n",B[i],piv,B[k]);
             fprintf(ope,"        %g-=%g\n",B[i],piv*B[k]);
             B[i]-=piv*B[k];
