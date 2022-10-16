@@ -24,6 +24,7 @@ float puiss(float x,int puiss){
 char * souligne(int n){
     n=n*4;
     char * X=malloc((n)*sizeof(char));
+    if (X==NULL){return NULL;}
     for (int i=0;i<n;i++){
         X[i]='=';
     }
@@ -31,7 +32,7 @@ char * souligne(int n){
     return X;
 }
 
-//MATRICES TEST
+//MATRICES TEST ET VALEURS DE B
 void A_5(float ** A,int n){
     for (int i=0;i<n;i++){
         for (int j=0;j<n;j++){
@@ -55,6 +56,16 @@ void A_6(float ** A,int n){
         }
         A[i][i]=3;
     }
+}
+float * valdeB(float ** A,float * B,int taille){
+    for (int i=0;i<taille;i++){
+        float somm=0;
+        for (int y=0;y<taille;y++){
+            somm+=A[i][y];
+        }
+        B[i]=somm;
+    }
+    return B;
 }
 
 //DECLARATION ET INIT
@@ -122,10 +133,42 @@ void ecritMatrice(FILE * fd,float ** t,float taille){
     }
     fprintf(fd,"%s\n",souligne(taille));
 }
-
+//DECOMPOSITION
+float ** diag(float** A,int taille){
+    float ** D=declMatrice(taille);
+    for (int i=0;i<taille;i++){
+        D[i][i]=A[i][i];
+    }
+    return D;
+}
+//les matrices triangulaires si contre sont en réalité leur opposée (A=D-E-F) (cf sujet)
+float ** trigInf(float** A,int taille){
+    float ** T=declMatrice(taille);
+    for (int i=0;i<taille;i++){
+        for (int j=0;j<i;j++){
+            T[i][j]=-A[i][j];
+        }
+    }
+    return T;
+}
+float ** trigSup(float** A,int taille){
+    float ** T=declMatrice(taille);
+    for (int i=0;i<taille;i++){
+        for (int j=i+1;j<taille;j++){
+            T[i][j]=-A[i][j];
+        }
+    }
+    return T;
+}
+//INVERSE
+void invMatDiag(float** D,int taille){
+    for (int i=0;i<taille;i++){
+        D[i][i]=1/D[i][i];
+    }
+}
 //RESOLUTIONS FACILES
-float * trigSup(float ** A,float * B,int taille){
-    float * X=malloc(taille*sizeof(float));
+float * ResTrigSup(float ** A,float * B,int taille){
+    float * X=declTab(taille);
     int n=taille-1;
 
     X[n]=B[n]/A[n][n];
@@ -198,15 +241,10 @@ void gaussDet(float ** A,float * B,int taille){
     fclose(evoMatA);
     fclose(evoVectB);
 }
-float * valdeB(float ** A,float * B,int taille){
-    for (int i=0;i<taille;i++){
-        float somm=0;
-        for (int y=0;y<taille;y++){
-            somm+=A[i][y];
-        }
-        B[i]=somm;
-    }
-    return B;
+
+//METHODE JACOBI
+float * jacobi(float ** A,float * B,int taille){
+    ;
 }
 
 int main(int argc, char ** argv){
@@ -238,10 +276,18 @@ int main(int argc, char ** argv){
     printf("A=\n");
     printf("============\n");
     afficheMatrice(A,N);
-    printf("============\n");
+    /*printf("============\n");
     printf("B=\n");
     printf("============\n");
-    afficheVect(B,N);
+    afficheVect(B,N);*/
+
+
+    float ** T=trigSup(A,N);
+    printf("============\n");
+    printf("T=\n");
+    printf("============\n");
+    afficheMatrice(T,N);
+
 
     //METHODE GAUSS
     if (argc>1 && strcmp(argv[1],"G")==0){
@@ -251,7 +297,7 @@ int main(int argc, char ** argv){
         else{
             gauss(A,B,N); //traitement avec l'algorithme de gauss
         }
-        float * X=trigSup(A,B,N); //traitement de la matrice triangulaire supp
+        float * X=ResTrigSup(A,B,N); //traitement de la matrice triangulaire supp
 
         //Affichage final (solution de AX=B)
         printf("============\n");
