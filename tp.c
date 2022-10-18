@@ -4,10 +4,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 
 #define M 3 //Taille des matrices statiques (A_1,A_2,A_3,A_4)
 
-#define N 3 //Taille de la matrice sélectionnée ou voulue
+#define N 15 //Taille de la matrice sélectionnée ou voulue
 
 //OUTILS
 float puiss(float x,int puiss){
@@ -87,6 +88,21 @@ float ** declMatrice(int taille){
     }
     return X;
 }
+float ** declTab2D(int lignes,int colonnes){
+    float ** X=malloc(lignes*sizeof(float*));
+    if (X==NULL){return NULL;}
+    for (int i=0;i<lignes;i++){
+        X[i]=malloc(colonnes*sizeof(float));
+        if (X[i]==NULL){
+            for(int j=0;j<i;j++){
+                free(X[j]);
+            }
+            free(X);
+            return NULL;
+        }
+    }
+    return X;
+}
 void initMatrice(float ** tab,float val[][M],int taille){
     for (int i=0;i<taille;i++){
         for (int y=0;y<taille;y++){
@@ -136,55 +152,8 @@ void ecritMatrice(FILE * fd,float ** t,float taille){
     }
     fprintf(fd,"%s\n",souligne(taille));
 }
-//DECOMPOSITION
-float ** diag(float** A,int taille){
-    float ** D=declMatrice(taille);
-    for (int i=0;i<taille;i++){
-        D[i][i]=A[i][i];
-    }
-    return D;
-}
-//les matrices triangulaires si contre sont en réalité leur opposée (A=D-E-F) (cf sujet)
-float ** trigInf(float** A,int taille){
-    float ** T=declMatrice(taille);
-    for (int i=0;i<taille;i++){
-        for (int j=0;j<i;j++){
-            T[i][j]=-A[i][j];
-        }
-    }
-    return T;
-}
-float ** trigSup(float** A,int taille){
-    float ** T=declMatrice(taille);
-    for (int i=0;i<taille;i++){
-        for (int j=i+1;j<taille;j++){
-            T[i][j]=-A[i][j];
-        }
-    }
-    return T;
-}
-//INVERSE
-void invMatDiag(float** D,int taille){
-    for (int i=0;i<taille;i++){
-        D[i][i]=1/D[i][i];
-    }
-}
-//RESOLUTIONS FACILES
-float * ResTrigSup(float ** A,float * B,int taille){
-    float * X=declTab(taille);
-    int n=taille-1;
 
-    X[n]=B[n]/A[n][n];
-    for (int i=n-1;i>=0;i--){
-        float somm=0;
-        for (int j=i+1;j<=n;j++){
-            somm+=A[i][j]*X[j];
-        }
-        X[i]=(1/A[i][i])*(B[i]-somm);
-    }
-    return X;
-}
-//METHODE GAUSS
+//METHODE DIRECTE (GAUSS)
 void gauss(float ** A,float * B,int taille){
     for (int k=0;k<taille-1;k++){
         for (int i=k+1;i<taille;i++){
@@ -244,18 +213,100 @@ void gaussDet(float ** A,float * B,int taille){
     fclose(evoMatA);
     fclose(evoVectB);
 }
+float * ResTrigSup(float ** A,float * B,int taille){
+    float * X=declTab(taille);
+    int n=taille-1;
 
-//METHODE JACOBI
-float * jacobi(float ** A,float * B,int taille){
-    ;
+    X[n]=B[n]/A[n][n];
+    for (int i=n-1;i>=0;i--){
+        float somm=0;
+        for (int j=i+1;j<=n;j++){
+            somm+=A[i][j]*X[j];
+        }
+        X[i]=(1/A[i][i])*(B[i]-somm);
+    }
+    return X;
 }
+//METHODES ITERATIVES (JACOBI,GAUSS-SEIDEL)
+float E(float ** A,float * X,float * B,int taille){
+    float norme=0;
+    float v=0;
+    for (int i=0;i<taille;i++){
+        //Produit Vectoriel A*X
+        float AXi=0; //Somme du produit A[i]*X[i]
+        for (int j=0;j<taille;j++){
+            AXi+=A[i][j]*X[i];
+        }
+        v=AXi-B[i]; // v représente le produit vectoriel AX de la i-ème ligne auquel on soustrait B[i]
+        norme+=puiss(v,2); //somme des v de toutes les lignes ("taille" lignes) au carré
+    }
+    return sqrtf(norme); // <=> ||AX-B||
+}
+
+float * jacobi(float e,float ** A,float * B,int taille){
+    //initialisation de X (x0)
+    float * X=declTab(taille);
+    for (int y=0;y<taille;y++){
+        X[y]=1/A[y][y]*B[y]; //première estimation de X 
+    }
+    //algo jacobi
+    //RAPPEL: Ax=b <=> A=D-E-F
+    int k=1;
+    while (E(A,X,B,taille)>=(1/e)){
+        for (int i=0;i<taille;i++){
+            //Produit Vectoriel -((E+F)*x) pour la i-ème ligne
+            float somm=0;
+            for (int j=0;j<taille;j++){
+                if (j!=i){
+                    somm+=A[i][j]*X[j];
+                }
+            }
+            //
+            X[i]=((1/A[i][i])*(B[i]-somm)); // <=> D-1 * (B-(-(E+F)*x))
+        }
+        k++;
+    }
+    printf("k=%d\n",k); //affichage du nombre d'itérations
+    return X;
+}
+float * gauss_seidel(float e,float ** A,float * B,int taille){
+    //initialisation de X (x0 et x1)
+    float * X0=declTab(taille);
+    float * X1=declTab(taille);
+    for (int y=0;y<taille;y++){
+        X0[y]=1/A[y][y]*B[y]; //première estimation de X 
+        X1[y]=X0[y];
+    }
+    //algo gauss_seidel
+    int k=1;
+    while (E(A,X1,B,taille)>=(1/e)){
+        for (int i=0;i<taille;i++){
+            float somm=0;
+            for (int j=0;j<i;j++){
+                somm+=A[i][j]*X1[j];
+            }
+            for (int j=i+1;j<taille;j++){
+                somm+=A[i][j]*X0[j];
+            }
+            //
+            X1[i]=((1/A[i][i])*(B[i]-somm));
+        }
+        if (k>1){
+            X0=X1;
+        }
+        k++;
+    }
+    printf("k=%d\n",k); //affichage du nombre d'itérations
+    return X1;
+}
+
 
 int main(int argc, char ** argv){
 
     float ** A=declMatrice(N); //Déclaration de la Matrice A
     float * B=declTab(N); //Déclaration du Vecteur B
     //Valeurs de A
-    float A_1[][M]={{3,0,4},{7,4,2},{-1,1,2}};
+    float A_1[][M]={{8,0,0},{0,20,-2},{0,1,10}};
     float A_2[][M]={{-3,3,-6},{-4,7,8},{5,7,-9}};
     float A_3[][M]={{4,1,1},{2,-9,0},{0,-8,6}};
     float A_4[][M]={{7,6,9},{4,5,-4},{-7,-3,8}};
@@ -265,9 +316,9 @@ int main(int argc, char ** argv){
     float B_3[]={6,-7,-2};
     float B_4[]={22,5,-2};
 
-    initMatrice(A,A_1,N); //Ecriture des valeurs de A (A_1,A_2,A_3,A_4)
+    //initMatrice(A,A_1,N); //Ecriture des valeurs de A (A_1,A_2,A_3,A_4)
     //ou bien
-    //A_6(A,N); //Génération des valeurs de A (A_5,A_6)
+    A_6(A,N); //Génération des valeurs de A (A_5,A_6)
 
     //initTab(B,B_3,N); //Ecriture des valeurs de B
     //ou bien
@@ -279,17 +330,10 @@ int main(int argc, char ** argv){
     printf("A=\n");
     printf("============\n");
     afficheMatrice(A,N);
-    /*printf("============\n");
+    printf("============\n");
     printf("B=\n");
     printf("============\n");
-    afficheVect(B,N);*/
-
-
-    float ** T=trigSup(A,N);
-    printf("============\n");
-    printf("T=\n");
-    printf("============\n");
-    afficheMatrice(T,N);
+    afficheVect(B,N);
 
 
     //METHODE GAUSS
@@ -300,22 +344,58 @@ int main(int argc, char ** argv){
         else{
             gauss(A,B,N); //traitement avec l'algorithme de gauss
         }
-        float * X=ResTrigSup(A,B,N); //traitement de la matrice triangulaire supp
+        float * Xg=ResTrigSup(A,B,N); //traitement de la matrice triangulaire supp
 
         //Affichage final (solution de AX=B)
         printf("============\n");
         printf("X=\n");
         printf("============\n");
-        afficheVect(X,N);
+        afficheVect(Xg,N);
     }
+
     //METHODE JACOBI
     else if (argc>1 && strcmp(argv[1],"J")==0){
-        ;
+        int conti=1;
+        while (conti==1){
+            float e;
+            printf("précision (>1)?:");
+            scanf("%f",&e);
+            if (e>1){
+                float * Xj=jacobi(e,A,B,N);
+                //Affichage final (solution de AX=B)
+                printf("============\n");
+                printf("X=\n");
+                printf("============\n");
+                afficheVect(Xj,N);
+                conti=0;
+            }
+            else{
+                printf("Veuillez entrer une valeur valide.\n");
+            }
+        }
     }
     //METHODE GAUSS-SEIDEL
     else if (argc>1 && strcmp(argv[1],"GS")==0){
-        ;
+        int conti=1;
+        while (conti==1){
+            float e;
+            printf("précision (>1)?:");
+            scanf("%f",&e);
+            if (e>1){
+                float * Xj=gauss_seidel(e,A,B,N);
+                //Affichage final (solution de AX=B)
+                printf("============\n");
+                printf("X=\n");
+                printf("============\n");
+                afficheVect(Xj,N);
+                conti=0;
+            }
+            else{
+                printf("Veuillez entrer une valeur valide.\n");
+            }
+        }
     }
+
     else{
         printf("Aucune méthode de résolution valable renseigné.\nVeuillez vous reporter au README pour des informations relatives à la syntaxe.\n");
     }
