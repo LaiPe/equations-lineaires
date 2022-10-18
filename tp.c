@@ -1,3 +1,6 @@
+//Ax c'est un vecteur !!!!!
+//||...|| module de ...
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
