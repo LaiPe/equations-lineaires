@@ -8,7 +8,7 @@
 
 #define M 3 //Taille des matrices statiques (A_1,A_2,A_3,A_4)
 
-#define N 15 //Taille de la matrice sélectionnée ou voulue
+#define N 3 //Taille de la matrice sélectionnée ou voulue
 
 //OUTILS
 float puiss(float x,int puiss){
@@ -270,12 +270,11 @@ float * jacobi(float e,float ** A,float * B,int taille){
     return X;
 }
 float * gauss_seidel(float e,float ** A,float * B,int taille){
-    //initialisation de X (x0 et x1)
+    //initialisation de X (x1)
     float * X0=declTab(taille);
     float * X1=declTab(taille);
     for (int y=0;y<taille;y++){
-        X0[y]=1/A[y][y]*B[y]; //première estimation de X 
-        X1[y]=X0[y];
+        X1[y]=1/A[y][y]*B[y]; //première estimation de X 
     }
     //algo gauss_seidel
     int k=1;
@@ -290,9 +289,7 @@ float * gauss_seidel(float e,float ** A,float * B,int taille){
             }
             //
             X1[i]=((1/A[i][i])*(B[i]-somm));
-        }
-        if (k>1){
-            X0=X1;
+            X0[i]=X1[i];
         }
         k++;
     }
@@ -316,16 +313,16 @@ int main(int argc, char ** argv){
     float B_3[]={6,-7,-2};
     float B_4[]={22,5,-2};
 
-    //initMatrice(A,A_1,N); //Ecriture des valeurs de A (A_1,A_2,A_3,A_4)
+    initMatrice(A,A_3,N); //Ecriture des valeurs de A (A_1,A_2,A_3,A_4)
     //ou bien
-    A_6(A,N); //Génération des valeurs de A (A_5,A_6)
+    //A_6(A,N); //Génération des valeurs de A (A_5,A_6)
 
-    //initTab(B,B_3,N); //Ecriture des valeurs de B
+    initTab(B,B_3,N); //Ecriture des valeurs de B
     //ou bien
-    valdeB(A,B,N); //Génération des valeurs de B tel que Xi=1
+    //valdeB(A,B,N); //Génération des valeurs de B tel que Xi=1
 
 
-    //Affichage initial (avant traitement)
+    /*//Affichage initial (avant traitement)
     printf("============\n");
     printf("A=\n");
     printf("============\n");
@@ -333,7 +330,7 @@ int main(int argc, char ** argv){
     printf("============\n");
     printf("B=\n");
     printf("============\n");
-    afficheVect(B,N);
+    afficheVect(B,N);*/
 
 
     //METHODE GAUSS
