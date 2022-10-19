@@ -1,19 +1,280 @@
-\documentclass[french]{article}
+\documentclass[10pt,a4paper,french]{article}
 \author{par Léo Peyronnet}
 \title{Équations Linéaires}
 \date{Octobre 2022}
 
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
 \usepackage{babel}
+\usepackage{listings}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{tabto}
+\usepackage{color}
+\usepackage[table]{xcolor}
+
+\newenvironment{decompo}{\par\medskip\noindent \textbf{Décomposition:}}{\medskip}
+\newenvironment{reccu}{\par\medskip\noindent\textbf{Récurrence:}}{\medskip}
+\newenvironment{conv}{\par\medskip\noindent\textbf{Convergence:}}{\medskip}
+
+\definecolor{ao(english)}{rgb}{0.0, 0.5, 0.0}
+
+\lstset{
+  aboveskip=3mm,
+  belowskip=-2mm,
+  basicstyle=\footnotesize,
+  breakatwhitespace=false,
+  breaklines=true,
+  captionpos=b,
+  commentstyle=\color{ao(english)},
+  deletekeywords={...},
+  escapeinside={\%*}{*)},
+  extendedchars=true,
+  framexleftmargin=16pt,
+  framextopmargin=3pt,
+  framexbottommargin=6pt,
+  frame=tb,
+  keepspaces=true,
+  keywordstyle=\color{blue},
+  language=C,
+  literate=
+  {²}{{\textsuperscript{2}}}1
+  {⁴}{{\textsuperscript{4}}}1
+  {⁶}{{\textsuperscript{6}}}1
+  {⁸}{{\textsuperscript{8}}}1
+  {€}{{\euro{}}}1
+  {é}{{\'e}}1
+  {è}{{\`{e}}}1
+  {ê}{{\^{e}}}1
+  {ë}{{\¨{e}}}1
+  {É}{{\'{E}}}1
+  {Ê}{{\^{E}}}1
+  {û}{{\^{u}}}1
+  {ù}{{\`{u}}}1
+  {â}{{\^{a}}}1
+  {à}{{\`{a}}}1
+  {á}{{\'{a}}}1
+  {ã}{{\~{a}}}1
+  {Á}{{\'{A}}}1
+  {Â}{{\^{A}}}1
+  {Ã}{{\~{A}}}1
+  {ç}{{\c{c}}}1
+  {Ç}{{\c{C}}}1
+  {õ}{{\~{o}}}1
+  {ó}{{\'{o}}}1
+  {ô}{{\^{o}}}1
+  {Õ}{{\~{O}}}1
+  {Ó}{{\'{O}}}1
+  {Ô}{{\^{O}}}1
+  {î}{{\^{i}}}1
+  {Î}{{\^{I}}}1
+  {í}{{\'{i}}}1
+  {Í}{{\~{Í}}}1,
+  morekeywords={*,...},
+  numbers=left,
+  numbersep=10pt,
+  numberstyle=\tiny\color{black},
+  rulecolor=\color{black},
+  showspaces=false,
+  showstringspaces=false,
+  showtabs=false,
+  stepnumber=1,
+  stringstyle=\color{gray},
+  tabsize=4,
+  title=\lstname,
+}
+
 
 \begin{document}
 \maketitle
 Compte rendu du TP consistant à programmer et comparer certaines méthodes de résolution de systèmes linéaires.
 \section{Rappel des méthodes}
-\subsection{Méthode de Gauss}
-La méthode de Gauss
-\subsection{Méthode de Jacobi}
-\subsection{Méthode Gauss-Seidel}
+\subsection{Méthode de Gauss (directe)}
+Dans le système $Ax = b$, la matrice inversible $A \in M_{n,n}(\mathbb{R})$ s'exprime sous la forme $A = M.N$ avec les matrices $M$ et $N$ où $M$ est facilement inversible et $N$ est triangulaire. Ainsi, $Ax = b \Leftrightarrow M.Nx = b \Leftrightarrow Nx = M^{-1}b$.
+La méthode de Gauss consiste en deux étapes:
+\begin{itemize}
+\item La triangulation: où l'on cherche $y \in \mathbb{R}^n$ tel que $My=b \Leftrightarrow y=M^{-1}b$.
+\item La résolution "facile": où l'on cherche $x \in \mathbb{R}^n$ tel que $Nx=b \Leftrightarrow x=N^{-1}y$.  
+\end{itemize}
+\subsection{Méthodes itératives}
+Toujours dans le système $Ax = b$, la matrice inversible $A \in M_{n,n}(\mathbb{R})$ peut également s'exprimer sous la forme $A=M-N$ avec $M$ facilement inversible. Ainsi, $Ax = b \Leftrightarrow (M-N)x = b \Leftrightarrow Mx-Nx = b \Leftrightarrow Mx = Nx + b \Leftrightarrow x = M^{-1}(Nx + b)$.
+ 
+Soit $F(x)=M^{-1}(Nx + b)$ tel que $F(x)=x$ pour la solution de $Ax=b$. $x$ est donc un point fixe de la fonction $F(x)$. Si $F(x)$ est une application strictement contractante, alors la suite ci-dessous converge vers un point fixe de F(x).
+$$
+\left\{
+	\begin{array}{ll}
+		x_0 \in \mathbb{R}^n \\
+		x_{n+1}=F(x_n)
+	\end{array}
+\right.
+$$
+$$
+\Leftrightarrow\left\{
+	\begin{array}{ll}
+		x_0 \in \mathbb{R}^n \\
+		x_{n+1}=M^{-1}(Nx_n+b)
+	\end{array}
+\right.
+$$
+\subsubsection{Méthode Jacobi}
+\begin{decompo}
+$A=D-E-F$ avec:
+\begin{itemize}
+\item $D$ la diagonale de $A$.
+\item $-E$ la partie sous la diagonale de $A$.
+\item $-F$ la partie sur la diagonale de $A$.
+\end{itemize}
+Ainsi, $M=D$ ; $N=E+F$ ; $A=M-N$.
+\end{decompo}
+
+\begin{reccu}
+$$
+\left\{
+	\begin{array}{ll}
+		x_0 \in \mathbb{R}^n \\
+		x_{n+1}=D^{-1}((E+F)x_n+b))
+	\end{array}
+\right.
+$$
+
+\end{reccu}
+
+\begin{conv}
+Si la matrice $A$ a une diagonale strictement dominante, alors $F(x)=M^{-1}(Nx+b)$ est strictement contractante et $x_n$ tend vers la solution. 
+\end{conv}
+
+\subsubsection{Méthode Gauss-Seidel}
+\begin{decompo}
+Avec la même décomposition,\\
+$M=D-E$ ; $N=F$ ; $A=M-N$.
+\end{decompo}
+
+\begin{reccu}
+$$
+\left\{
+	\begin{array}{ll}
+		x_0 \in \mathbb{R}^n \\
+		x_{n+1}=(D-E)^{-1}(Fx_n+b))
+	\end{array}
+\right.
+$$
+
+\end{reccu}
+
+\begin{conv}
+Si la matrice $A$ a une diagonale strictement dominante ou si A est symétrique définie positive, alors $F(x)=M^{-1}(Nx+b)$ est strictement contractante et $x_n$ tend vers la solution.  
+\end{conv}
 \section{Présentation des programmes}
+\subsection{Algorithme de Gauss simple et résolution de matrice triangulaire supérieure}
+
+\begin{lstlisting}
+void gauss(float ** A,float * B,int taille){
+    for (int k=0;k<taille-1;k++){
+        for (int i=k+1;i<taille;i++){
+            float piv=A[i][k]/A[k][k];
+            for (int j=k;j<taille;j++){
+                A[i][j]-=piv*A[k][j];
+            }
+            B[i]-=piv*B[k];
+        }
+    }
+}
+
+float * ResTrigSup(float ** A,float * B,int taille){
+    float * X=declTab(taille);
+    int n=taille-1;
+
+    X[n]=B[n]/A[n][n];
+    for (int i=n-1;i>=0;i--){
+        float somm=0;
+        for (int j=i+1;j<=n;j++){
+            somm+=A[i][j]*X[j];
+        }
+        X[i]=(1/A[i][i])*(B[i]-somm);
+    }
+    return X;
+}
+\end{lstlisting}
+
+\subsection{Méthode Jacobi}
+\begin{lstlisting}
+float E(float ** A,float * X,float * B,int taille){
+    float norme=0;
+    float v=0;
+    for (int i=0;i<taille;i++){
+        //Produit Vectoriel A*X
+        float AXi=0; //Somme du produit A[i]*X[i]
+        for (int j=0;j<taille;j++){
+            AXi+=A[i][j]*X[i];
+        }
+        v=AXi-B[i]; // v représente le produit vectoriel AX de la i-ème ligne auquel on soustrait B[i]
+        norme+=puiss(v,2); //somme des v de toutes les lignes ("taille" lignes) au carré
+    }
+    return sqrtf(norme); // <=> ||AX-B||
+}
+
+float * jacobi(float e,float ** A,float * B,int taille){
+    //initialisation de X (x0)
+    float * X=declTab(taille);
+    for (int y=0;y<taille;y++){
+        X[y]=1/A[y][y]*B[y]; //première estimation de X 
+    }
+    //algo jacobi
+    //RAPPEL: Ax=b <=> A=D-E-F
+    int k=1;
+    while (E(A,X,B,taille)>=(1/e)){
+        for (int i=0;i<taille;i++){
+            //Produit Vectoriel -((E+F)*x) pour la i-ème ligne
+            float somm=0;
+            for (int j=0;j<taille;j++){
+                if (j!=i){
+                    somm+=A[i][j]*X[j];
+                }
+            }
+            //
+            X[i]=((1/A[i][i])*(B[i]-somm)); // <=> D-1 * (B-(-(E+F)*x))
+        }
+        k++;
+    }
+    printf("k=%d\n",k); //affichage du nombre d'itérations
+    return X;
+}
+\end{lstlisting}
+\subsection{Méthode Gauss-Seidel}
+\begin{lstlisting}
+// La fonction E est sous-entendue
+
+float * gauss_seidel(float e,float ** A,float * B,int taille){
+    //initialisation de X (x1)
+    float * X0=declTab(taille);
+    float * X1=declTab(taille);
+    for (int y=0;y<taille;y++){
+        X1[y]=1/A[y][y]*B[y]; //première estimation de X 
+    }
+    //algo gauss_seidel
+    int k=1;
+    while (E(A,X1,B,taille)>=(1/e)){
+        for (int i=0;i<taille;i++){
+            float somm=0;
+            for (int j=0;j<i;j++){
+                somm+=A[i][j]*X1[j];
+            }
+            for (int j=i+1;j<taille;j++){
+                somm+=A[i][j]*X0[j];
+            }
+            X1[i]=((1/A[i][i])*(B[i]-somm));
+            X0[i]=X1[i];
+        }
+        k++;
+    }
+    printf("k=%d\n",k); //affichage du nombre d'itérations
+    return X1;
+}
+\end{lstlisting}
 \section{Tables et graphiques sur les jeux d'essais}
 \section{Conclusion}
 \end{document}

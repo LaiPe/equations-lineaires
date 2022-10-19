@@ -1,6 +1,3 @@
-//Ax c'est un vecteur !!!!!
-//||...|| module de ...
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -78,21 +75,6 @@ float ** declMatrice(int taille){
     if (X==NULL){return NULL;}
     for (int i=0;i<taille;i++){
         X[i]=malloc(taille*sizeof(float));
-        if (X[i]==NULL){
-            for(int j=0;j<i;j++){
-                free(X[j]);
-            }
-            free(X);
-            return NULL;
-        }
-    }
-    return X;
-}
-float ** declTab2D(int lignes,int colonnes){
-    float ** X=malloc(lignes*sizeof(float*));
-    if (X==NULL){return NULL;}
-    for (int i=0;i<lignes;i++){
-        X[i]=malloc(colonnes*sizeof(float));
         if (X[i]==NULL){
             for(int j=0;j<i;j++){
                 free(X[j]);
@@ -247,7 +229,7 @@ float * jacobi(float e,float ** A,float * B,int taille){
     //initialisation de X (x0)
     float * X=declTab(taille);
     for (int y=0;y<taille;y++){
-        X[y]=1/A[y][y]*B[y]; //première estimation de X 
+        X[y]=0; //vecteur nul
     }
     //algo jacobi
     //RAPPEL: Ax=b <=> A=D-E-F
@@ -274,7 +256,8 @@ float * gauss_seidel(float e,float ** A,float * B,int taille){
     float * X0=declTab(taille);
     float * X1=declTab(taille);
     for (int y=0;y<taille;y++){
-        X1[y]=1/A[y][y]*B[y]; //première estimation de X 
+        X1[y]=0; //vecteur nul
+        X0[y]=0;
     }
     //algo gauss_seidel
     int k=1;
@@ -288,8 +271,9 @@ float * gauss_seidel(float e,float ** A,float * B,int taille){
                 somm+=A[i][j]*X0[j];
             }
             //
-            X1[i]=((1/A[i][i])*(B[i]-somm));
             X0[i]=X1[i];
+            X1[i]=((1/A[i][i])*(B[i]-somm));
+            
         }
         k++;
     }
@@ -322,7 +306,7 @@ int main(int argc, char ** argv){
     //valdeB(A,B,N); //Génération des valeurs de B tel que Xi=1
 
 
-    /*//Affichage initial (avant traitement)
+    //Affichage initial (avant traitement)
     printf("============\n");
     printf("A=\n");
     printf("============\n");
@@ -330,7 +314,7 @@ int main(int argc, char ** argv){
     printf("============\n");
     printf("B=\n");
     printf("============\n");
-    afficheVect(B,N);*/
+    afficheVect(B,N);
 
 
     //METHODE GAUSS
