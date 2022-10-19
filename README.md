@@ -17,6 +17,8 @@ avec pour les méthodes de résolution:
 
 et (det) un argument optionnel permettant de faire appel à la version détaillé de la méthode 
 
+*(gcc: pensez à bien utiliser l'argument -lm lors de votre compilation => utilisation de la fonction sqrtf())*
+
 **Mode détaillé:**
 
 Crée trois fichiers .log afin de retracer/analyser les opérations effectuées par les méthodes mais également de suivre l'évolution de la matrice/du vecteur au fur et à mesure de l'avancée de l'algorithme. Ces trois fichiers sont situés dans le sous-répertoire *bin/*.

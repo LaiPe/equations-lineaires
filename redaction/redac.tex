@@ -221,7 +221,7 @@ float * jacobi(float e,float ** A,float * B,int taille){
     //initialisation de X (x0)
     float * X=declTab(taille);
     for (int y=0;y<taille;y++){
-        X[y]=1/A[y][y]*B[y]; //première estimation de X 
+        X[y]=0; //vecteur nul
     }
     //algo jacobi
     //RAPPEL: Ax=b <=> A=D-E-F
@@ -248,12 +248,12 @@ float * jacobi(float e,float ** A,float * B,int taille){
 \begin{lstlisting}
 // La fonction E est sous-entendue
 
-float * gauss_seidel(float e,float ** A,float * B,int taille){
     //initialisation de X (x1)
     float * X0=declTab(taille);
     float * X1=declTab(taille);
     for (int y=0;y<taille;y++){
-        X1[y]=1/A[y][y]*B[y]; //première estimation de X 
+        X1[y]=0; //vecteur nul
+        X0[y]=0;
     }
     //algo gauss_seidel
     int k=1;
@@ -266,8 +266,10 @@ float * gauss_seidel(float e,float ** A,float * B,int taille){
             for (int j=i+1;j<taille;j++){
                 somm+=A[i][j]*X0[j];
             }
-            X1[i]=((1/A[i][i])*(B[i]-somm));
+            //
             X0[i]=X1[i];
+            X1[i]=((1/A[i][i])*(B[i]-somm));
+            
         }
         k++;
     }
